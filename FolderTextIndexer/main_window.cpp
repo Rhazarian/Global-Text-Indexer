@@ -112,6 +112,7 @@ void main_window::add_indexed_file(std::filesystem::path dir, std::filesystem::p
 
 void main_window::add_matched_file(std::filesystem::path path, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t> data)
 {
+	std::lock_guard<std::mutex> lg(matched_files_mtx);
 	if (matched_files.find(path) != matched_files.end())
 	{
 		return;
@@ -190,9 +191,10 @@ void main_window::dir_changed(QString const& path)
 
 void main_window::clear_matched_files()
 {
-	for (auto it = matched_files.begin(); it != matched_files.end(); ++it)
+	std::lock_guard<std::mutex> lg(matched_files_mtx);
+	for (auto& matched_file : matched_files)
 	{
-		delete std::get<QTreeWidgetItem*>(it->second);
+		delete std::get<QTreeWidgetItem*>(matched_file.second);
 	}
 	matched_files.clear();
 }

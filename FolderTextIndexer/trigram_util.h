@@ -11,7 +11,7 @@
 
 using default_string_type = std::string;
 using default_trigram_set_type = QSet<uint32_t>;
-constexpr std::streamsize default_max_line_size = 2048;
+constexpr std::streamsize default_max_line_size = 8192;
 constexpr default_trigram_set_type::size_type default_max_trigram_set_size = 32768;
 
 template<typename SetT = default_trigram_set_type, std::streamsize MaxLineSize = default_max_line_size, typename SetT::size_type MaxTrigramSetSize = default_max_trigram_set_size>

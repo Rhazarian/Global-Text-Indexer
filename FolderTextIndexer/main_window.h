@@ -40,6 +40,7 @@ private:
 	std::optional<std::boyer_moore_horspool_searcher<decltype(pattern)::iterator>> pattern_searcher;
 	std::map<std::filesystem::path, QListWidgetItem*> wdirs_list_items;
 	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files;
+	mutable std::mutex matched_files_mtx;
 	std::map<std::filesystem::path, std::tuple<QTreeWidgetItem*, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t>>> matched_files;
 	std::map<std::filesystem::path, std::vector<std::filesystem::path>> dir_files;
 	std::map<std::filesystem::path, size_t> dir_count;
