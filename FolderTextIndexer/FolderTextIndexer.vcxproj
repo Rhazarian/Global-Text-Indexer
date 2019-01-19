@@ -100,14 +100,17 @@
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <IncludePath>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
       <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</Define>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtMoc>
     <QtUic>
       <ExecutionDescription>Uic'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\ui_%(Filename).h</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtUic>
     <QtRcc>
       <ExecutionDescription>Rcc'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\qrc_%(Filename).cpp</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -132,14 +135,17 @@
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <IncludePath>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
       <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</Define>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtMoc>
     <QtUic>
       <ExecutionDescription>Uic'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\ui_%(Filename).h</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtUic>
     <QtRcc>
       <ExecutionDescription>Rcc'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\qrc_%(Filename).cpp</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,14 +170,17 @@
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <IncludePath>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
       <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</Define>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtMoc>
     <QtUic>
       <ExecutionDescription>Uic'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\ui_%(Filename).h</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtUic>
     <QtRcc>
       <ExecutionDescription>Rcc'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\qrc_%(Filename).cpp</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -197,14 +206,17 @@
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <IncludePath>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
       <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</Define>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtMoc>
     <QtUic>
       <ExecutionDescription>Uic'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\ui_%(Filename).h</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtUic>
     <QtRcc>
       <ExecutionDescription>Rcc'ing %(Identity)...</ExecutionDescription>
       <OutputFile>.\GeneratedFiles\qrc_%(Filename).cpp</OutputFile>
+      <QTDIR>$(QTDIR)</QTDIR>
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -217,7 +229,12 @@
     <ClCompile Include="pattern_lookup_worker.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="main_window.h" />
+    <QtMoc Include="main_window.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="add_directory_dialog.ui" />
@@ -228,12 +245,32 @@
     <QtRcc Include="FolderTextIndexer.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="add_directory_dialog.h" />
+    <QtMoc Include="add_directory_dialog.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="action_object.h" />
-    <QtMoc Include="add_dir_worker.h" />
-    <QtMoc Include="pattern_lookup_worker.h" />
+    <QtMoc Include="action_object.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+    </QtMoc>
+    <QtMoc Include="add_dir_worker.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+    </QtMoc>
+    <QtMoc Include="pattern_lookup_worker.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;C:\Qt\5.12.0\msvc2017_64\include;.\GeneratedFiles\$(ConfigurationName);C:\Qt\5.12.0\msvc2017_64\include\QtCore;C:\Qt\5.12.0\msvc2017_64\include\QtWidgets;C:\Qt\5.12.0\msvc2017_64\include\QtGui;C:\Qt\5.12.0\msvc2017_64\include\QtANGLE;%(AdditionalIncludeDirectories)</IncludePath>
+    </QtMoc>
     <QtMoc Include="exception_occured_dialog.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB</Define>
@@ -254,7 +291,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="msvc2017" Qt5Version_x0020_x64="msvc2017_64" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_x64="msvc2017_64" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
