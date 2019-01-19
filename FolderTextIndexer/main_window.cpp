@@ -326,7 +326,7 @@ void main_window::dir_worker_threw_exception(std::exception_ptr ex_ptr)
 	dir_worker_finished();
 	try
 	{
-		std::rethrow_exception(ex_ptr);
+		std::rethrow_exception(std::move(ex_ptr));
 	}
 	catch (std::exception const& ex)
 	{
@@ -344,7 +344,7 @@ void main_window::lookup_worker_threw_exception(std::exception_ptr ex_ptr)
 	ui.lookup_pattern_line_edit->setText("");
 	try
 	{
-		std::rethrow_exception(ex_ptr);
+		std::rethrow_exception(std::move(ex_ptr));
 	}
 	catch (std::exception const& ex)
 	{
