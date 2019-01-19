@@ -34,7 +34,7 @@ void add_dir_worker::process()
 		progress = 0;
 		for (auto const& file_path : fs::recursive_directory_iterator(dir)) {
 			cancellation_point();
-			std::ifstream fin(file_path);
+			std::ifstream fin(file_path.path());
 			if (fin) {
 				auto trigram_set = get_trigram_set(fin);
 				if (trigram_set.has_value())
