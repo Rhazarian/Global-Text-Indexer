@@ -302,7 +302,13 @@ void main_window::search_pattern_changed_synced(QString const& pattern)
 	this->pattern = pattern.toStdString();
 	pattern_searcher.emplace(this->pattern.begin(), this->pattern.end());
 	std::istringstream iss(this->pattern);
-	pattern_trigram_set = get_trigram_set(iss).value();
+	auto opt = get_trigram_set(iss);
+	if (!opt.has_value())
+	{
+		ui.lookup_pattern_line_edit->setText("");
+		return;
+	}
+	pattern_trigram_set = opt.value();
 	if (cur_lookup_worker == nullptr)
 	{
 		launch_lookup_worker();
