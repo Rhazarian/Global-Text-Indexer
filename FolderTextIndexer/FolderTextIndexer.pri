@@ -13,15 +13,18 @@ HEADERS += ./trigram_util.h \
     ./action_object.h \
     ./add_dir_worker.h \
     ./pattern_lookup_worker.h \
-    ./exception_occured_dialog.h
+    ./exception_occured_dialog.h \
+    ./details_dialog.h
 SOURCES += ./action_object.cpp \
     ./add_directory_dialog.cpp \
     ./add_dir_worker.cpp \
     ./exception_occured_dialog.cpp \
     ./main_window.cpp \
     ./main.cpp \
-    ./pattern_lookup_worker.cpp
+    ./pattern_lookup_worker.cpp \
+    ./details_dialog.cpp
 FORMS += ./add_directory_dialog.ui \
     ./exception_occured_dialog.ui \
-    ./main_window.ui
+    ./main_window.ui \
+    ./details_dialog.ui
 RESOURCES += FolderTextIndexer.qrc
