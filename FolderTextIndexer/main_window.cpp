@@ -242,6 +242,7 @@ void main_window::search_pattern_changed(QString const& pattern)
 void main_window::lookup_worker_finished(bool cancelled)
 {
 	ui.lookup_progress_group_box->setEnabled(false);
+	ui.lookup_progress_bar->setMaximum(1);
 	ui.lookup_progress_bar->reset();
 	ui.lookup_progress_group_box->setTitle("Idle...");
 	if (cancelled)
