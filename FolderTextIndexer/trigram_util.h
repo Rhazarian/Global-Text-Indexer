@@ -53,7 +53,7 @@ std::tuple<QVector<std::tuple<size_t, size_t, StringT>>, size_t> pattern_lookup(
 	QVector<std::tuple<size_t, size_t, StringT>> vector;
 	in.getline(buffer.data(), buffer.size());
 	size_t total_count = 0;
-	for (size_t line = 0; !in.eof() && !in.fail(); ++line, in.getline(buffer.data(), buffer.size()))
+	for (size_t line = 0; !in.fail(); ++line, in.getline(buffer.data(), buffer.size()))
 	{
 		const auto gcount = in.gcount() - !in.eof();
 		size_t count = 0;
@@ -64,6 +64,10 @@ std::tuple<QVector<std::tuple<size_t, size_t, StringT>>, size_t> pattern_lookup(
 		if (count != 0) {
 			vector.push_back({ count, line, StringT{ buffer.begin(), buffer.begin() + gcount } });
 			total_count += count;
+		}
+		if (in.eof())
+		{
+			break;
 		}
 	}
 	return { vector, total_count };

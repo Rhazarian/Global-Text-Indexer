@@ -3,7 +3,7 @@
 #include <QDialog>
 #include "ui_exception_occured_dialog.h"
 
-class exception_occured_dialog : public QDialog
+struct exception_occured_dialog : public QDialog
 {
 	Q_OBJECT
 

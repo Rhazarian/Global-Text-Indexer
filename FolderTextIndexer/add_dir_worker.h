@@ -6,7 +6,7 @@
 
 #include "main_window.h"
 
-class add_dir_worker : public action_object
+struct add_dir_worker : public action_object
 {
 	Q_OBJECT
 

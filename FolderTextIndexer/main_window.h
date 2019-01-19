@@ -22,7 +22,7 @@
 struct add_dir_worker;
 struct pattern_lookup_worker;
 
-class main_window : public QMainWindow
+struct main_window : public QMainWindow
 {
 	Q_OBJECT
 

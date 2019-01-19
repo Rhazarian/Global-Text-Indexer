@@ -6,7 +6,7 @@
 #include <string>
 #include <optional>
 
-class add_directory_dialog : public QDialog
+struct add_directory_dialog : public QDialog
 {
 	Q_OBJECT
 

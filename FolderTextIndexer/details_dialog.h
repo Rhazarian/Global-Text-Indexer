@@ -3,7 +3,7 @@
 #include <QDialog>
 #include "ui_details_dialog.h"
 
-class details_dialog : public QDialog
+struct details_dialog : public QDialog
 {
 	Q_OBJECT
 
