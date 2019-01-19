@@ -311,7 +311,7 @@ void main_window::dir_worker_finished()
 	if (queued_add_dir_workers.empty())
 	{
 		ui.dir_indexing_progress_group_box->setTitle("Idle...");
-		ui.dir_indexing_progress_group_box->setEnabled(true);
+		ui.dir_indexing_progress_group_box->setEnabled(false);
 		ui.dir_indexing_progress_bar->reset();
 		return;
 	}
