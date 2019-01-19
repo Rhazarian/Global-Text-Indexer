@@ -213,7 +213,6 @@ void main_window::add_dir_button_clicked()
 		item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
 		ui.indexed_dirs_list_widget->addItem(item);
 		queue_add_dir_worker(new add_dir_worker(path, item, this), std::string("Adding directory \"").append(lex_norm).append("\" to index..."));
-		fs_watcher.addPath(res.value().c_str());
 		wdirs_list_items.insert({ std::move(path), item });
 	}
 }
