@@ -55,6 +55,31 @@ main_window::main_window(QWidget *parent) : QMainWindow(parent)
 	connect(&fs_watcher, &QFileSystemWatcher::directoryChanged, this, &main_window::dir_changed);
 }
 
+main_window::~main_window()
+{
+	queued_dir_workers.clear();
+	if (cur_lookup_worker)
+	{
+		cur_lookup_worker->request_cancellation();
+	}
+	std::lock_guard<std::mutex> lg(get_lookup_mutex());
+	if (cur_dir_worker)
+	{
+		cur_dir_worker->request_cancellation();
+	}
+	std::lock_guard<std::mutex> lg_indx(get_index_mutex());
+}
+
+std::mutex& main_window::get_index_mutex() const
+{
+	return index_mtx;
+}
+
+std::mutex& main_window::get_lookup_mutex() const
+{
+	return lookup_mtx;
+}
+
 std::mutex& main_window::get_pattern_mutex() const
 {
 	return pattern_mtx;
@@ -225,7 +250,7 @@ void main_window::launch_lookup_worker()
 {
 	ui.lookup_progress_group_box->setEnabled(true);
 	ui.lookup_progress_group_box->setTitle(std::string("Looking up \"").append(pattern).append("\"...").c_str());
-	cur_lookup_worker = new pattern_lookup_worker(pattern, pattern_trigram_set, indexed_files);
+	cur_lookup_worker = new pattern_lookup_worker(pattern, pattern_trigram_set, indexed_files, this);
 	connect(cur_lookup_worker, &pattern_lookup_worker::clear_matched_files, this, &main_window::clear_matched_files);
 	connect(cur_lookup_worker, &pattern_lookup_worker::add_matched_file, this, &main_window::add_matched_file);
 	launch_action_internal(cur_lookup_worker, ui.lookup_progress_bar, &QProgressBar::setMaximum, ui.lookup_progress_bar, &QProgressBar::setValue, this, &main_window::lookup_worker_finished, this, &main_window::lookup_worker_threw_exception);

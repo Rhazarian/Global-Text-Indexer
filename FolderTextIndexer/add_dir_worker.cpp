@@ -30,6 +30,7 @@ std::filesystem::path const& add_dir_worker::get_dir_path()
 void add_dir_worker::process()
 {
 	QVector<fs::path> paths;
+	std::lock_guard<std::mutex> lg(window->get_index_mutex());
 	try {
 		int progress = 0;
 		for (auto const& file_path : fs::recursive_directory_iterator(dir)) {

@@ -9,7 +9,7 @@
 namespace fs = std::filesystem;
 
 pattern_lookup_worker::pattern_lookup_worker(std::string_view pattern,
-	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files) : pattern(pattern), indexed_files(std::move(indexed_files))
+	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files, main_window* window) : pattern(pattern), indexed_files(std::move(indexed_files)), window(window)
 {
 	qRegisterMetaType<std::filesystem::path>("std::filesystem::path");
 	qRegisterMetaType<std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t>>("std::tuple<QVector<std::tuple<size_t,size_t,std::string> >,size_t>");
@@ -23,7 +23,7 @@ pattern_lookup_worker::pattern_lookup_worker(std::string_view pattern,
 }
 
 pattern_lookup_worker::pattern_lookup_worker(std::string_view pattern, QSet<uint32_t> trigram_set,
-	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files) : pattern(pattern), trigram_set(std::move(trigram_set)), indexed_files(std::move(indexed_files))
+	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files, main_window* window) : pattern(pattern), trigram_set(std::move(trigram_set)), indexed_files(std::move(indexed_files)), window(window)
 {
 	qRegisterMetaType<fs::path>("std::filesystem::path");
 }
@@ -32,6 +32,7 @@ pattern_lookup_worker::~pattern_lookup_worker() = default;
 
 void pattern_lookup_worker::process()
 {
+	std::lock_guard<std::mutex> lg(window->get_lookup_mutex());
 	try {
 		std::boyer_moore_horspool_searcher searcher(pattern.begin(), pattern.end());
 		emit clear_matched_files();

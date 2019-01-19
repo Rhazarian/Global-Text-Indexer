@@ -28,12 +28,15 @@ class main_window : public QMainWindow
 
 public:
 	main_window(QWidget *parent = Q_NULLPTR);
+	~main_window();
 
 private:
 	Ui::FolderTextIndexerClass ui;
 	QSet<uint32_t> pattern_trigram_set;
 	std::string pattern;
 	mutable std::mutex pattern_mtx;
+	mutable std::mutex index_mtx;
+	mutable std::mutex lookup_mtx;
 	std::optional<std::boyer_moore_horspool_searcher<decltype(pattern)::iterator>> pattern_searcher;
 	std::map<std::filesystem::path, QListWidgetItem*> wdirs_list_items;
 	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files;
@@ -73,6 +76,8 @@ private:
 	void queue_dir_worker(std::string const& name, bool front = false);
 
 public:
+	std::mutex& get_index_mutex() const;
+	std::mutex& get_lookup_mutex() const;
 	std::mutex& get_pattern_mutex() const;
 	std::string const& get_pattern() const;
 	QSet<uint32_t> const& get_pattern_trigram_set() const;

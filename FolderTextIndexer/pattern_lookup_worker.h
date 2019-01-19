@@ -11,8 +11,8 @@ struct pattern_lookup_worker : public action_object
 	Q_OBJECT
 
 public:
-	pattern_lookup_worker(std::string_view pattern, QMap<std::filesystem::path, QSet<uint32_t>> indexed_files);
-	pattern_lookup_worker(std::string_view pattern, QSet<uint32_t> trigram_set, QMap<std::filesystem::path, QSet<uint32_t>> indexed_files);
+	pattern_lookup_worker(std::string_view pattern, QMap<std::filesystem::path, QSet<uint32_t>> indexed_files, main_window* window);
+	pattern_lookup_worker(std::string_view pattern, QSet<uint32_t> trigram_set, QMap<std::filesystem::path, QSet<uint32_t>> indexed_files, main_window* window);
 	~pattern_lookup_worker();
 
 public slots:
@@ -26,4 +26,6 @@ private:
 	std::string pattern;
 	QSet<uint32_t> trigram_set;
 	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files;
+
+	main_window* window;
 };

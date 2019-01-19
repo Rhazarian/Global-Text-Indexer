@@ -19,6 +19,7 @@ public:
 private:
 	std::filesystem::path dir;
 	QListWidgetItem* item;
+
 	main_window* window;
 
 public slots:
