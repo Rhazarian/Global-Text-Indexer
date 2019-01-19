@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include <QFileSystemWatcher>
 #include <QMenu>
 
 #include "ui_main_window.h"
@@ -30,7 +29,6 @@ public:
 
 private:
 	Ui::FolderTextIndexerClass ui;
-	QFileSystemWatcher fs_watcher;
 	QSet<uint32_t> pattern_trigram_set;
 	std::string pattern;
 	mutable std::mutex pattern_mtx;
@@ -89,13 +87,13 @@ private slots:
 	void provide_indexed_dirs_context_menu(QPoint const& point);
 	void provide_matched_files_context_menu(QPoint const& point);
 
-public slots:
 	void add_indexed_file(std::filesystem::path dir, std::filesystem::path path, QSet<uint32_t> trigram_set);
 	void add_matched_file(std::filesystem::path path, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t> data);
 	void remove_dir_from_index(std::filesystem::path path);
+
 	void clear_matched_files();
-	void set_dir_worker_progress_max(int progress_max);
-	void set_dir_worker_progress(int progress);
+
+	void show_details(QTreeWidgetItem* item);
 
 signals:
 	void search_pattern_changed_internal(QString const& pattern);

@@ -42,6 +42,7 @@ main_window::main_window(QWidget *parent) : QMainWindow(parent)
 	open_file_action = matched_files_context_menu.addAction("Open");
 	show_details_action = matched_files_context_menu.addAction("Show details");
 	connect(ui.matched_files_tree_widget, &QTreeWidget::customContextMenuRequested, this, &main_window::provide_matched_files_context_menu);
+	connect(ui.matched_files_tree_widget, &QTreeWidget::itemDoubleClicked, this, &main_window::show_details);
 
 	ui.lookup_progress_group_box->setEnabled(false);
 	ui.lookup_progress_bar->reset();
@@ -114,16 +115,6 @@ void main_window::remove_dir_from_index(std::filesystem::path path)
 	}
 }
 
-void main_window::set_dir_worker_progress_max(int progress_max)
-{
-	ui.dir_indexing_progress_bar->setMaximum(progress_max);
-}
-
-void main_window::set_dir_worker_progress(int progress)
-{
-	ui.dir_indexing_progress_bar->setValue(progress);
-}
-
 void main_window::clear_matched_files()
 {
 	for (auto it = matched_files.begin(); it != matched_files.end(); ++it)
@@ -131,6 +122,12 @@ void main_window::clear_matched_files()
 		delete std::get<QTreeWidgetItem*>(it->second);
 	}
 	matched_files.clear();
+}
+
+void main_window::show_details(QTreeWidgetItem* item)
+{
+	const auto str = item->text(1).toStdString();
+	new details_dialog(str, std::get<1>(matched_files.find(str)->second));
 }
 
 template<typename SetProgressMaxReceiverT, typename SetProgressMaxFuncPtrT, typename SetProgressReceiverT, typename SetProgressFuncPtrT, typename FinishReceiverT, typename FinishFuncPtrT, typename ExReceiverT, typename ExFuncPtrT>
@@ -172,7 +169,7 @@ void main_window::launch_add_dir_worker(add_dir_worker* obj, std::string_view na
 	connect(obj, &add_dir_worker::add_indexed_file, this, &main_window::add_indexed_file);
 	connect(obj, &add_dir_worker::add_matched_file, this, &main_window::add_matched_file);
 	connect(obj, &add_dir_worker::remove_dir_from_index, this, &main_window::remove_dir_from_index);
-	launch_action_internal(obj, this, &main_window::set_dir_worker_progress_max, this, &main_window::set_dir_worker_progress, this, &main_window::dir_worker_finished, this, &main_window::dir_worker_threw_exception);
+	launch_action_internal(obj, ui.dir_indexing_progress_bar, &QProgressBar::setMaximum, ui.dir_indexing_progress_bar, &QProgressBar::setValue, this, &main_window::dir_worker_finished, this, &main_window::dir_worker_threw_exception);
 }
 
 void main_window::launch_lookup_worker()
@@ -305,8 +302,7 @@ void main_window::provide_matched_files_context_menu(QPoint const& point)
 	}
 	else if (action == show_details_action)
 	{
-		const auto str = item->text(1).toStdString();
-		new details_dialog(str, std::get<1>(matched_files.find(str)->second));
+		show_details(item);
 	}
 }
 
