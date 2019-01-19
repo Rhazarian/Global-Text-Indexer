@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QMenu>
+#include <QFileSystemWatcher>
 
 #include "ui_main_window.h"
 
@@ -16,6 +17,7 @@
 
 #include "add_directory_dialog.h"
 #include "trigram_util.h"
+#include <set>
 
 struct add_dir_worker;
 struct pattern_lookup_worker;
@@ -39,6 +41,10 @@ private:
 	std::map<std::filesystem::path, std::vector<std::filesystem::path>> dir_files;
 	std::map<std::filesystem::path, size_t> dir_count;
 
+	std::map<std::filesystem::path, std::set<std::filesystem::path>> file_to_dirs_tmp;
+
+	QFileSystemWatcher fs_watcher;
+
 	QMenu indexed_dirs_context_menu;
 	QAction* open_dir_action;
 	QAction* remove_dir_from_index_action;
@@ -49,8 +55,8 @@ private:
 
 	add_directory_dialog add_dir_dlg;
 
-	add_dir_worker* cur_add_dir_worker = nullptr;
-	std::deque<std::pair<add_dir_worker*, std::string>> queued_add_dir_workers;
+	add_dir_worker* cur_dir_worker = nullptr;
+	std::deque<std::string> queued_dir_workers;
 	pattern_lookup_worker* cur_lookup_worker = nullptr;
 
 	template<typename SetProgressMaxReceiverT, typename SetProgressMaxFuncPtrT, typename SetProgressReceiverT, typename SetProgressFuncPtrT, typename FinishReceiverT, typename FinishFuncPtrT, typename ExReceiverT, typename ExFuncPtrT>
@@ -60,9 +66,11 @@ private:
 		FinishReceiverT finish_receiver, FinishFuncPtrT finish_func_ptr,
 		ExReceiverT ex_receiver, ExFuncPtrT ex_func_ptr
 	);
-	void launch_add_dir_worker(add_dir_worker* obj, std::string_view name);
+	
 	void launch_lookup_worker();
-	void queue_add_dir_worker(add_dir_worker* obj, std::string_view name);
+
+	void launch_dir_worker(std::string const& name);
+	void queue_dir_worker(std::string const& name, bool front = false);
 
 public:
 	std::mutex& get_pattern_mutex() const;
@@ -90,6 +98,9 @@ private slots:
 	void add_indexed_file(std::filesystem::path dir, std::filesystem::path path, QSet<uint32_t> trigram_set);
 	void add_matched_file(std::filesystem::path path, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t> data);
 	void remove_dir_from_index(std::filesystem::path path);
+
+	void file_changed(QString const& path);
+	void dir_changed(QString const& path);
 
 	void clear_matched_files();
 

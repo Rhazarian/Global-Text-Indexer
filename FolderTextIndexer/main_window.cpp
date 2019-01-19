@@ -18,6 +18,7 @@
 
 #include "exception_occured_dialog.h"
 #include "details_dialog.h"
+#include <QFileInfo>
 
 namespace fs = std::filesystem;
 
@@ -49,6 +50,9 @@ main_window::main_window(QWidget *parent) : QMainWindow(parent)
 
 	connect(ui.lookup_pattern_line_edit, &QLineEdit::textChanged, this, &main_window::search_pattern_changed);
 	connect(this, &main_window::search_pattern_changed_internal, this, &main_window::search_pattern_changed_synced);
+
+	connect(&fs_watcher, &QFileSystemWatcher::fileChanged, this, &main_window::file_changed);
+	connect(&fs_watcher, &QFileSystemWatcher::directoryChanged, this, &main_window::dir_changed);
 }
 
 std::mutex& main_window::get_pattern_mutex() const
@@ -73,7 +77,10 @@ std::boyer_moore_horspool_searcher<decltype(main_window::pattern)::iterator> con
 
 void main_window::add_indexed_file(std::filesystem::path dir, std::filesystem::path path, QSet<uint32_t> trigram_set)
 {
+	file_to_dirs_tmp[path].emplace(dir);
+
 	indexed_files.insert(path, trigram_set);
+	fs_watcher.addPath(path.string().c_str());
 	++dir_count[path];
 	dir_files[dir].emplace_back(std::move(path));
 }
@@ -94,8 +101,15 @@ void main_window::add_matched_file(std::filesystem::path path, std::tuple<QVecto
 void main_window::remove_dir_from_index(std::filesystem::path path)
 {
 	auto it = wdirs_list_items.find(path);
-	delete it->second;
-	wdirs_list_items.erase(it);
+	if (it == wdirs_list_items.end())
+	{
+		return;
+	}
+	if (std::find(queued_dir_workers.begin(), queued_dir_workers.end(), path) == queued_dir_workers.end())
+	{
+		delete it->second;
+		wdirs_list_items.erase(it);
+	}
 	if (auto const file_it = dir_files.find(path); file_it != dir_files.end())
 	{
 		for (auto const& file : file_it->second)
@@ -109,9 +123,43 @@ void main_window::remove_dir_from_index(std::filesystem::path path)
 					matched_files.erase(matched_it);
 				}
 				dir_count.erase(dir_count.find(file));
+				fs_watcher.removePath(file.string().c_str());
 			}
+
+			file_to_dirs_tmp[file].erase(file_to_dirs_tmp[file].find(path));
 		}
 		dir_files.erase(file_it);
+	}
+	fs_watcher.removePath(path.string().c_str());
+}
+
+void main_window::file_changed(QString const& path)
+{
+	dir_changed(file_to_dirs_tmp[path.toStdString()].begin()->string().c_str());
+}
+
+void main_window::dir_changed(QString const& path)
+{
+	const auto& str = path.toStdString();
+	QFileInfo dir(path);
+	if (cur_dir_worker && cur_dir_worker->get_dir_path() == str)
+	{
+		cancel_dir_indexing();
+		if (dir.exists() && dir.isDir()) {
+			queue_dir_worker(path.toStdString(), true);
+		}
+	}
+	else {
+		if (const auto it = std::find(queued_dir_workers.begin(), queued_dir_workers.end(), str); it == queued_dir_workers.end()) {
+			remove_dir_from_index(str);
+			if (dir.exists() && dir.isDir()) {
+				queue_dir_worker(path.toStdString());
+			}
+		}
+		else if (!(dir.exists() && dir.isDir())) {
+			queued_dir_workers.erase(it);
+			remove_dir_from_index(str);
+		}
 	}
 }
 
@@ -161,15 +209,16 @@ void main_window::launch_action_internal(action_object* obj,
 	working_thread->start();
 }
 
-void main_window::launch_add_dir_worker(add_dir_worker* obj, std::string_view name)
+void main_window::launch_dir_worker(std::string const& name)
 {
-	cur_add_dir_worker = obj;
+	cur_dir_worker = new add_dir_worker(name, wdirs_list_items[name], this);
 	ui.dir_indexing_progress_group_box->setEnabled(true);
-	ui.dir_indexing_progress_group_box->setTitle(std::string(name).c_str());
-	connect(obj, &add_dir_worker::add_indexed_file, this, &main_window::add_indexed_file);
-	connect(obj, &add_dir_worker::add_matched_file, this, &main_window::add_matched_file);
-	connect(obj, &add_dir_worker::remove_dir_from_index, this, &main_window::remove_dir_from_index);
-	launch_action_internal(obj, ui.dir_indexing_progress_bar, &QProgressBar::setMaximum, ui.dir_indexing_progress_bar, &QProgressBar::setValue, this, &main_window::dir_worker_finished, this, &main_window::dir_worker_threw_exception);
+	ui.dir_indexing_progress_group_box->setTitle(std::string("Indexing directory \"").append(name).append("\"...").c_str());
+	fs_watcher.addPath(name.c_str());
+	connect(cur_dir_worker, &add_dir_worker::add_indexed_file, this, &main_window::add_indexed_file);
+	connect(cur_dir_worker, &add_dir_worker::add_matched_file, this, &main_window::add_matched_file);
+	connect(cur_dir_worker, &add_dir_worker::remove_dir_from_index, this, &main_window::remove_dir_from_index);
+	launch_action_internal(cur_dir_worker, ui.dir_indexing_progress_bar, &QProgressBar::setMaximum, ui.dir_indexing_progress_bar, &QProgressBar::setValue, this, &main_window::dir_worker_finished, this, &main_window::dir_worker_threw_exception);
 }
 
 void main_window::launch_lookup_worker()
@@ -182,20 +231,32 @@ void main_window::launch_lookup_worker()
 	launch_action_internal(cur_lookup_worker, ui.lookup_progress_bar, &QProgressBar::setMaximum, ui.lookup_progress_bar, &QProgressBar::setValue, this, &main_window::lookup_worker_finished, this, &main_window::lookup_worker_threw_exception);
 }
 
-void main_window::queue_add_dir_worker(add_dir_worker* obj, std::string_view name)
+void main_window::queue_dir_worker(std::string const& name, bool front)
 {
-	if (cur_add_dir_worker == nullptr)
+	if (wdirs_list_items.find(name) == wdirs_list_items.end()) {
+		auto item = new QListWidgetItem();
+		item->setText(name.c_str());
+		item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+		ui.indexed_dirs_list_widget->addItem(item);
+		wdirs_list_items.insert({ name, item });
+	}
+	if (cur_dir_worker == nullptr)
 	{
-		launch_add_dir_worker(obj, name);
+		launch_dir_worker(name);
 		return;
 	}
-	queued_add_dir_workers.emplace_back(obj, name);
+	if (!front) {
+		queued_dir_workers.emplace_back(name);
+	} else
+	{
+		queued_dir_workers.emplace_front(name);
+	}
 	ui.queued_dirs_counter_lcd_number->display(ui.queued_dirs_counter_lcd_number->intValue() + 1);
 }
 
 void main_window::cancel_dir_indexing()
 {
-	cur_add_dir_worker->request_cancellation();
+	cur_dir_worker->request_cancellation();
 }
 
 void main_window::add_dir_button_clicked()
@@ -207,13 +268,7 @@ void main_window::add_dir_button_clicked()
 		{
 			return;
 		}
-		auto item = new QListWidgetItem();
-		auto const lex_norm = path.lexically_normal().string();
-		item->setText(lex_norm.c_str());
-		item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
-		ui.indexed_dirs_list_widget->addItem(item);
-		queue_add_dir_worker(new add_dir_worker(path, item, this), std::string("Adding directory \"").append(lex_norm).append("\" to index..."));
-		wdirs_list_items.insert({ std::move(path), item });
+		queue_dir_worker(path.lexically_normal().string());
 	}
 }
 
@@ -270,16 +325,15 @@ void main_window::provide_indexed_dirs_context_menu(QPoint const& point)
 	} else if (action == remove_dir_from_index_action)
 	{
 		const auto dir = item->text().toStdString();
-		if (const auto queue_it = std::find_if(queued_add_dir_workers.begin(), queued_add_dir_workers.end(), [&dir](const auto& queued_dir)
+		if (const auto queue_it = std::find(queued_dir_workers.begin(), queued_dir_workers.end(), dir); queue_it != queued_dir_workers.end())
 		{
-			return queued_dir.second == dir;
-		}); queue_it != queued_add_dir_workers.end())
-		{
-			queued_add_dir_workers.erase(queue_it);
-		} else if (const auto li_it = wdirs_list_items.find(dir); (li_it->second->flags() & Qt::ItemIsEnabled) != 0)
+			queued_dir_workers.erase(queue_it);
+		}
+		if (const auto li_it = wdirs_list_items.find(dir); (li_it->second->flags() & Qt::ItemIsEnabled) != 0)
 		{
 			remove_dir_from_index(dir);
-		} else
+		}
+		if (cur_dir_worker != nullptr && cur_dir_worker->get_dir_path() == dir)
 		{
 			cancel_dir_indexing();
 		}
@@ -308,17 +362,17 @@ void main_window::provide_matched_files_context_menu(QPoint const& point)
 
 void main_window::dir_worker_finished()
 {
-	cur_add_dir_worker = nullptr;
-	if (queued_add_dir_workers.empty())
+	cur_dir_worker = nullptr;
+	if (queued_dir_workers.empty())
 	{
 		ui.dir_indexing_progress_group_box->setTitle("Idle...");
 		ui.dir_indexing_progress_group_box->setEnabled(false);
 		ui.dir_indexing_progress_bar->reset();
 		return;
 	}
-	const auto next_action = queued_add_dir_workers.front();
-	launch_add_dir_worker(next_action.first, next_action.second);
-	queued_add_dir_workers.pop_front();
+	const auto& next_dir = queued_dir_workers.front();
+	launch_dir_worker(next_dir);
+	queued_dir_workers.pop_front();
 	ui.queued_dirs_counter_lcd_number->display(ui.queued_dirs_counter_lcd_number->intValue() - 1);
 }
 
@@ -327,7 +381,7 @@ void main_window::dir_worker_threw_exception(std::exception_ptr ex_ptr)
 	dir_worker_finished();
 	try
 	{
-		std::rethrow_exception(std::move(ex_ptr));
+		std::rethrow_exception(ex_ptr);
 	}
 	catch (std::exception const& ex)
 	{
@@ -345,7 +399,7 @@ void main_window::lookup_worker_threw_exception(std::exception_ptr ex_ptr)
 	ui.lookup_pattern_line_edit->setText("");
 	try
 	{
-		std::rethrow_exception(std::move(ex_ptr));
+		std::rethrow_exception(ex_ptr);
 	}
 	catch (std::exception const& ex)
 	{

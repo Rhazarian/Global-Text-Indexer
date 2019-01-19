@@ -14,6 +14,8 @@ public:
 	explicit add_dir_worker(std::filesystem::path dir, QListWidgetItem* item, main_window* window);
 	~add_dir_worker();
 
+	std::filesystem::path const& get_dir_path();
+
 private:
 	std::filesystem::path dir;
 	QListWidgetItem* item;

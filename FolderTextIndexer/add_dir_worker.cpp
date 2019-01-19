@@ -22,6 +22,11 @@ add_dir_worker::add_dir_worker(std::filesystem::path dir, QListWidgetItem* item,
 
 add_dir_worker::~add_dir_worker() = default;
 
+std::filesystem::path const& add_dir_worker::get_dir_path()
+{
+	return dir;
+}
+
 void add_dir_worker::process()
 {
 	QVector<fs::path> paths;
