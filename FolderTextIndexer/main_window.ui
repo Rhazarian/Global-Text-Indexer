@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>FolderTextIndexer</string>
+   <string>Global Text Indexer</string>
   </property>
   <widget class="QWidget" name="central_widget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -135,7 +135,21 @@
          <widget class="QLineEdit" name="lookup_pattern_line_edit"/>
         </item>
         <item>
-         <widget class="QListWidget" name="matched_files_list_widget"/>
+         <widget class="QTreeWidget" name="matched_files_tree_widget">
+          <attribute name="headerStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Matches</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>File</string>
+           </property>
+          </column>
+         </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="lookup_progress_group_box">

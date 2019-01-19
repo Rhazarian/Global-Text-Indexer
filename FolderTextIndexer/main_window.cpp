@@ -17,24 +17,37 @@
 #include "pattern_lookup_worker.h"
 
 #include "exception_occured_dialog.h"
+#include "details_dialog.h"
 
 namespace fs = std::filesystem;
 
 main_window::main_window(QWidget *parent) : QMainWindow(parent)
 {
 	ui.setupUi(this);
-	ui.indexed_dirs_list_widget->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(ui.indexed_dirs_list_widget, &QListWidget::customContextMenuRequested, this, &main_window::provide_indexed_dirs_context_menu);
-	ui.lookup_progress_group_box->setEnabled(false);
-	ui.lookup_progress_bar->reset();
-	ui.dir_indexing_progress_group_box->setEnabled(false);
-	ui.dir_indexing_progress_bar->reset();
-	connect(ui.add_dir_button, &QPushButton::clicked, this, &main_window::add_dir_button_clicked);
-	connect(ui.lookup_pattern_line_edit, &QLineEdit::textChanged, this, &main_window::search_pattern_changed);
-	connect(this, &main_window::search_pattern_changed_internal, this, &main_window::search_pattern_changed_synced);
 
+	ui.indexed_dirs_list_widget->setContextMenuPolicy(Qt::CustomContextMenu);
 	open_dir_action = indexed_dirs_context_menu.addAction("Open");
 	remove_dir_from_index_action = indexed_dirs_context_menu.addAction("Remove from index");
+	connect(ui.indexed_dirs_list_widget, &QListWidget::customContextMenuRequested, this, &main_window::provide_indexed_dirs_context_menu);
+
+	ui.dir_indexing_progress_group_box->setEnabled(false);
+	ui.dir_indexing_progress_bar->reset();
+
+	connect(ui.add_dir_button, &QPushButton::clicked, this, &main_window::add_dir_button_clicked);
+
+	ui.matched_files_tree_widget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	ui.matched_files_tree_widget->setUniformRowHeights(true);
+
+	ui.matched_files_tree_widget->setContextMenuPolicy(Qt::CustomContextMenu);
+	open_file_action = matched_files_context_menu.addAction("Open");
+	show_details_action = matched_files_context_menu.addAction("Show details");
+	connect(ui.matched_files_tree_widget, &QTreeWidget::customContextMenuRequested, this, &main_window::provide_matched_files_context_menu);
+
+	ui.lookup_progress_group_box->setEnabled(false);
+	ui.lookup_progress_bar->reset();
+
+	connect(ui.lookup_pattern_line_edit, &QLineEdit::textChanged, this, &main_window::search_pattern_changed);
+	connect(this, &main_window::search_pattern_changed_internal, this, &main_window::search_pattern_changed_synced);
 }
 
 std::mutex& main_window::get_pattern_mutex() const
@@ -64,16 +77,17 @@ void main_window::add_indexed_file(std::filesystem::path dir, std::filesystem::p
 	dir_files[dir].emplace_back(std::move(path));
 }
 
-void main_window::add_matched_file(std::filesystem::path path, pattern_lookup_data<> data)
+void main_window::add_matched_file(std::filesystem::path path, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t> data)
 {
 	if (matched_files.find(path) != matched_files.end())
 	{
 		return;
 	}
-	auto item = new QListWidgetItem();
-	item->setText(path.lexically_normal().string().c_str());
-	ui.matched_files_list_widget->addItem(item);
-	matched_files.insert({ std::move(path), {item, data} });
+	auto item = new QTreeWidgetItem();
+	item->setText(0, QString::number(std::get<1>(data)));
+	item->setText(1, path.lexically_normal().string().c_str());
+	ui.matched_files_tree_widget->addTopLevelItem(item);
+	matched_files.emplace(std::piecewise_construct, std::forward_as_tuple(std::move(path)), std::forward_as_tuple(item, std::move(data)));
 }
 
 void main_window::remove_dir_from_index(std::filesystem::path path)
@@ -90,7 +104,7 @@ void main_window::remove_dir_from_index(std::filesystem::path path)
 				indexed_files.erase(indexed_files.find(file));
 				if (auto const matched_it = matched_files.find(file); matched_it != matched_files.end())
 				{
-					delete std::get<QListWidgetItem*>(matched_it->second);
+					delete std::get<QTreeWidgetItem*>(matched_it->second);
 					matched_files.erase(matched_it);
 				}
 				dir_count.erase(dir_count.find(file));
@@ -114,7 +128,7 @@ void main_window::clear_matched_files()
 {
 	for (auto it = matched_files.begin(); it != matched_files.end(); ++it)
 	{
-		delete std::get<QListWidgetItem*>(it->second);
+		delete std::get<QTreeWidgetItem*>(it->second);
 	}
 	matched_files.clear();
 }
@@ -272,6 +286,27 @@ void main_window::provide_indexed_dirs_context_menu(QPoint const& point)
 		{
 			cancel_dir_indexing();
 		}
+	}
+}
+
+void main_window::provide_matched_files_context_menu(QPoint const& point)
+{
+	const auto index = ui.matched_files_tree_widget->indexAt(point);
+	if (!index.isValid())
+	{
+		return;
+	}
+	const auto item_point = ui.matched_files_tree_widget->mapToGlobal(point);
+	const auto item = ui.matched_files_tree_widget->topLevelItem(index.row());
+	const auto action = matched_files_context_menu.exec(item_point);
+	if (action == open_file_action)
+	{
+		QDesktopServices::openUrl(QUrl::fromLocalFile(item->text(1)));
+	}
+	else if (action == show_details_action)
+	{
+		const auto str = item->text(1).toStdString();
+		new details_dialog(str, std::get<1>(matched_files.find(str)->second));
 	}
 }
 

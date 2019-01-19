@@ -51,6 +51,9 @@
     <ClCompile Include="exception_occured_dialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="details_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="FolderTextIndexer.qrc">
@@ -76,6 +79,9 @@
     <QtMoc Include="exception_occured_dialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="details_dialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="main_window.ui">
@@ -85,6 +91,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="exception_occured_dialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="details_dialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -37,12 +37,17 @@ private:
 	std::optional<std::boyer_moore_horspool_searcher<decltype(pattern)::iterator>> pattern_searcher;
 	std::map<std::filesystem::path, QListWidgetItem*> wdirs_list_items;
 	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files;
-	std::map<std::filesystem::path, std::tuple<QListWidgetItem*, pattern_lookup_data<>>> matched_files;
+	std::map<std::filesystem::path, std::tuple<QTreeWidgetItem*, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t>>> matched_files;
 	std::map<std::filesystem::path, std::vector<std::filesystem::path>> dir_files;
 	std::map<std::filesystem::path, size_t> dir_count;
+
 	QMenu indexed_dirs_context_menu;
 	QAction* open_dir_action;
 	QAction* remove_dir_from_index_action;
+
+	QMenu matched_files_context_menu;
+	QAction* open_file_action;
+	QAction* show_details_action;
 
 	add_directory_dialog add_dir_dlg;
 
@@ -82,10 +87,11 @@ private slots:
 	void lookup_worker_threw_exception(std::exception_ptr ex_ptr);
 
 	void provide_indexed_dirs_context_menu(QPoint const& point);
+	void provide_matched_files_context_menu(QPoint const& point);
 
 public slots:
 	void add_indexed_file(std::filesystem::path dir, std::filesystem::path path, QSet<uint32_t> trigram_set);
-	void add_matched_file(std::filesystem::path path, pattern_lookup_data<> data);
+	void add_matched_file(std::filesystem::path path, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t> data);
 	void remove_dir_from_index(std::filesystem::path path);
 	void clear_matched_files();
 	void set_dir_worker_progress_max(int progress_max);

@@ -13,6 +13,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -21,6 +22,7 @@
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSplitter>
+#include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -48,7 +50,7 @@ public:
     QWidget *right_widget;
     QVBoxLayout *verticalLayout_3;
     QLineEdit *lookup_pattern_line_edit;
-    QListWidget *matched_files_list_widget;
+    QTreeWidget *matched_files_tree_widget;
     QGroupBox *lookup_progress_group_box;
     QHBoxLayout *horizontalLayout;
     QProgressBar *lookup_progress_bar;
@@ -167,10 +169,11 @@ public:
 
         verticalLayout_3->addWidget(lookup_pattern_line_edit);
 
-        matched_files_list_widget = new QListWidget(right_widget);
-        matched_files_list_widget->setObjectName(QString::fromUtf8("matched_files_list_widget"));
+        matched_files_tree_widget = new QTreeWidget(right_widget);
+        matched_files_tree_widget->setObjectName(QString::fromUtf8("matched_files_tree_widget"));
+        matched_files_tree_widget->header()->setStretchLastSection(false);
 
-        verticalLayout_3->addWidget(matched_files_list_widget);
+        verticalLayout_3->addWidget(matched_files_tree_widget);
 
         lookup_progress_group_box = new QGroupBox(right_widget);
         lookup_progress_group_box->setObjectName(QString::fromUtf8("lookup_progress_group_box"));
@@ -200,11 +203,14 @@ public:
 
     void retranslateUi(QMainWindow *FolderTextIndexerClass)
     {
-        FolderTextIndexerClass->setWindowTitle(QApplication::translate("FolderTextIndexerClass", "FolderTextIndexer", nullptr));
+        FolderTextIndexerClass->setWindowTitle(QApplication::translate("FolderTextIndexerClass", "Global Text Indexer", nullptr));
         indexed_dirs_label->setText(QApplication::translate("FolderTextIndexerClass", "Indexed Directories", nullptr));
         add_dir_button->setText(QApplication::translate("FolderTextIndexerClass", "Add Directory", nullptr));
         dir_indexing_progress_group_box->setTitle(QApplication::translate("FolderTextIndexerClass", "Idle...", nullptr));
         queued_dirs_counter_group_box->setTitle(QApplication::translate("FolderTextIndexerClass", "Queued", nullptr));
+        QTreeWidgetItem *___qtreewidgetitem = matched_files_tree_widget->headerItem();
+        ___qtreewidgetitem->setText(1, QApplication::translate("FolderTextIndexerClass", "File", nullptr));
+        ___qtreewidgetitem->setText(0, QApplication::translate("FolderTextIndexerClass", "Matches", nullptr));
         lookup_progress_group_box->setTitle(QApplication::translate("FolderTextIndexerClass", "Idle...", nullptr));
     } // retranslateUi
 

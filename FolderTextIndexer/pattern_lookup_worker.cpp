@@ -11,8 +11,8 @@ namespace fs = std::filesystem;
 pattern_lookup_worker::pattern_lookup_worker(std::string_view pattern,
 	QMap<std::filesystem::path, QSet<uint32_t>> indexed_files) : pattern(pattern), indexed_files(std::move(indexed_files))
 {
-	qRegisterMetaType<fs::path>("std::filesystem::path");
-	qRegisterMetaType<pattern_lookup_data<>>("pattern_lookup_data<>");
+	qRegisterMetaType<std::filesystem::path>("std::filesystem::path");
+	qRegisterMetaType<std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t>>("std::tuple<QVector<std::tuple<size_t,size_t,std::string> >,size_t>");
 	std::istringstream iss(this->pattern);
 	auto trigram_set = get_trigram_set(iss);
 	if (!trigram_set.has_value())
@@ -45,7 +45,7 @@ void pattern_lookup_worker::process()
 				if (auto const& test_set = it.value(); test_set.contains(trigram_set))
 				{
 					std::ifstream fin(it.key());
-					if (auto data = pattern_lookup(fin, searcher); !data.empty())
+					if (auto data = pattern_lookup(fin, searcher); !std::get<0>(data).empty())
 					{
 						emit add_matched_file(it.key(), data);
 					}

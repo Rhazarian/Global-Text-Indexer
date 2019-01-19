@@ -14,10 +14,10 @@ Q_DECLARE_METATYPE(fs::path);
 
 add_dir_worker::add_dir_worker(std::filesystem::path dir, QListWidgetItem* item, main_window* window) : dir(std::move(dir)), item(item), window(window)
 {
-	qRegisterMetaType<fs::path>("std::filesystem::path");
-	qRegisterMetaType<QVector<fs::path>>("QVector<std::filesystem::path>");
+	qRegisterMetaType<std::filesystem::path>("std::filesystem::path");
+	qRegisterMetaType<QVector<std::filesystem::path>>("QVector<std::filesystem::path>");
+	qRegisterMetaType<std::tuple<QVector<std::tuple<size_t, size_t, std::string> >, size_t>>("std::tuple<QVector<std::tuple<size_t,size_t,std::string> >,size_t>");
 	qRegisterMetaType<QSet<uint32_t>>("QSet<uint32_t>");
-	qRegisterMetaType<pattern_lookup_data<>>("pattern_lookup_data<>");
 }
 
 add_dir_worker::~add_dir_worker() = default;
@@ -45,7 +45,7 @@ void add_dir_worker::process()
 					{
 						fin.clear();
 						fin.seekg(0, std::ios::beg);
-						if (auto data = pattern_lookup(fin, window->get_pattern_searcher()); !data.empty())
+						if (auto data = pattern_lookup(fin, window->get_pattern_searcher()); !std::get<0>(data).empty())
 						{
 							emit add_matched_file(file_path, data);
 						}

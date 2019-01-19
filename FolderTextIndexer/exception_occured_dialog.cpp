@@ -6,7 +6,7 @@ exception_occured_dialog::exception_occured_dialog(std::string const& title, std
 	ui.title_label->setText(title.c_str());
 	ui.message_text_browser->setText(message.c_str());
 	connect(ui.ok_button, &QPushButton::clicked, this, &exception_occured_dialog::accept);
-	connect(this, &exception_occured_dialog::accept, this, &exception_occured_dialog::deleteLater);
+	connect(this, &exception_occured_dialog::finished, this, &exception_occured_dialog::deleteLater);
 	open();
 }
 

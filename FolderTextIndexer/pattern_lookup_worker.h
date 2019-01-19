@@ -20,7 +20,7 @@ public slots:
 
 signals:
 	void clear_matched_files();
-	void add_matched_file(std::filesystem::path path, pattern_lookup_data<> data);
+	void add_matched_file(std::filesystem::path path, std::tuple<QVector<std::tuple<size_t, size_t, std::string>>, size_t> data);
 
 private:
 	std::string pattern;
